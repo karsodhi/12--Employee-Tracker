@@ -53,20 +53,21 @@ const stateAction = () => {
     })
 }
 
-// start specific scenarios
-const employeesInfo = () => {
+
+// start scenarios for employees
+const viewEmployees = () => {
     db.query("SELECT  employee_info.id, employee_info.first_name, employee_info.last_name, employee_role.title, employee_role.salary, department.department_name, employee_info.manager_id FROM employee_info LEFT JOIN employee_role ON employee_info.role_id=employee_role.id LEFT JOIN department ON employee_role.department_id=department.id", function (err, result, fields) {
         console.table(result);
         stateAction();
     });
 }
-const rolesInfo = () => {
+const viewRoles = () => {
     db.query("SELECT  employee_role.id, employee_role.title, department.department_name, employee_role.salary FROM employee_role LEFT JOIN department ON employee_role.department_id=department.id", function (err, result, fields) {
         console.table(result);
         stateAction();
     });
 }
-const departmentInfo = () => {
+const viewDepartments = () => {
     db.query("SELECT * FROM department", function (err, result, fields) {
         console.table(result);
         stateAction();
@@ -93,7 +94,7 @@ function addEmployee() {
             name: 'employeeRole',
             validate: (answer) => {
                 if (isNaN(answer)) {
-                    return `You did not enter a valid number`
+                    return `Not a valid number`
                 } else if (answer === "") {
                     return `Please enter your role id number`
                 }
@@ -108,7 +109,6 @@ function addEmployee() {
         },
     ])
         .then((response) => {
-            console.log(response)
             // if connection is successful
             db.query('INSERT INTO employee_info SET ?;', {
                 first_name: response.firstName,
@@ -123,18 +123,18 @@ function addEmployee() {
 
 
 
-function updateEmployeeRole() {
+function updateEmployee() {
     inquirer
         .prompt([
             {
                 name: 'roleId',
                 type: 'input',
-                message: 'What is the ID number for the employee who is being updated?'
+                message: 'Enter the ID number for the employee who is being updated?'
             },
             {
                 name: 'newRole',
                 type: 'input',
-                message: 'What is the name of the new roll this employee will belong to?',
+                message: 'What is the new role for this employee?',
             }
 
         ]).then(res => {

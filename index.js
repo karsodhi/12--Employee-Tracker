@@ -53,10 +53,10 @@ const stateAction = () => {
     })
 }
 
-
+// "SELECT employee_information.id, employee_information first_name, employee_information.last_name, employee_roles.title, employee_role.salary, department.department_name, employee_information.manager_id FROM employee_information LEFT JOIN employee_roles ON employee_information.role_id=employee_roles.id LEFT JOIN department ON employee_roles.department_id=department.id", 
 // start scenarios for employees
 const viewEmployees = () => {
-    db.query("SELECT  employee_info.id, employee_info.first_name, employee_info.last_name, employee_role.title, employee_role.salary, department.department_name, employee_info.manager_id FROM employee_info LEFT JOIN employee_role ON employee_info.role_id=employee_role.id LEFT JOIN department ON employee_role.department_id=department.id", function (err, result, fields) {
+    db.query("SELECT * FROM employee_information", function (err, result) {
         console.table(result);
         stateAction();
     });
@@ -110,7 +110,7 @@ function addEmployee() {
     ])
         .then((response) => {
             // if connection is successful
-            db.query('INSERT INTO employee_info SET ?;', {
+            db.query('INSERT INTO employee_information SET ?;', {
                 first_name: response.firstName,
                 last_name: response.lastName,
                 role_id: response.employeeRole,
@@ -218,5 +218,4 @@ function addDepartment() {
         })
 }
 
-// invoke function
 stateAction();

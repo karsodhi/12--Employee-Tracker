@@ -1,9 +1,8 @@
-const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const consoleTable = require('console.table');
+const mysql = require('mysql2');
+const cTable = require('console.table');
 
-
-//connect to the database
+//connect to database
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -11,10 +10,9 @@ const db = mysql.createConnection(
         password: 'Password1',
         database: 'employees_db'
     },
+    console.log(`Connected to the employees_db database.`)
 );
 
-
-//start asking questions
 const stateAction = () => {
     inquirer.prompt([
         {
@@ -53,10 +51,8 @@ const stateAction = () => {
     })
 }
 
-// "SELECT employee_information.id, employee_information first_name, employee_information.last_name, employee_roles.title, employee_role.salary, department.department_name, employee_information.manager_id FROM employee_information LEFT JOIN employee_roles ON employee_information.role_id=employee_roles.id LEFT JOIN department ON employee_roles.department_id=department.id", 
-// start scenarios for employees
 const viewEmployees = () => {
-    db.query("SELECT * FROM employee_information", function (err, result) {
+    db.query("SELECT  employee_information.id, employee_information.first_name, employee_information.last_name, employee_role.title, employee_role.salary, department.department_name, employee_information.manager_id FROM employee_information LEFT JOIN employee_role ON employee_information.role_id=employee_role.id LEFT JOIN department ON employee_role.department_id=department.id", function (err, result, fields) {
         console.table(result);
         stateAction();
     });
@@ -79,13 +75,13 @@ function addEmployee() {
     inquirer.prompt([
         {
             type: 'input',
-            message: 'What is their first name?',
+            message: 'What is the first name?',
             name: 'firstName',
         },
 
         {
             type: 'input',
-            message: 'What is their last name?',
+            message: 'What is the last name?',
             name: 'lastName',
         },
         {
@@ -109,6 +105,7 @@ function addEmployee() {
         },
     ])
         .then((response) => {
+            console.log(response)
             // if connection is successful
             db.query('INSERT INTO employee_information SET ?;', {
                 first_name: response.firstName,
@@ -129,12 +126,12 @@ function updateEmployee() {
             {
                 name: 'roleId',
                 type: 'input',
-                message: 'Enter the ID number for the employee who is being updated?'
+                message: 'What is the ID number for the employee who is being updated?'
             },
             {
                 name: 'newRole',
                 type: 'input',
-                message: 'What is the new role for this employee?',
+                message: 'What is the name of the new roll for this employee?',
             }
 
         ]).then(res => {
@@ -167,7 +164,7 @@ function addRole() {
                 message: 'What is the salary for this new role',
                 validate: (answer) => {
                     if (isNaN(answer)) {
-                        return `You did not enter a valid number`
+                        return `Not a valid number`
                     } else if (answer === "") {
                         return `Please enter your role id number`
                     }
@@ -180,7 +177,7 @@ function addRole() {
                 message: 'What department ID number will this role belong to?',
                 validate: (answer) => {
                     if (isNaN(answer)) {
-                        return `You did not enter a valid number`
+                        return `Not a valid number`
                     } else if (answer === "") {
                         return `Please enter department id number`
                     }
